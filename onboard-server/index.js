@@ -18,11 +18,10 @@ app.get('/', function(req, res){
     res.sendFile(path.join(__dirname, 'build', 'index.html'))
 })
 
-app.post('/message', function(req, res){
+app.get('/message', function(req, res){
     params = {
         workspace_id: 'f32c3653-9b64-43ed-88f9-bc31a98e8878',
-        input: {'text': req.body.text},
-        context: req.body.context
+        input: {'text': ""}
     }
 
     service.message(params).then(answer=>{
@@ -30,7 +29,27 @@ app.post('/message', function(req, res){
     })
     .catch(err => console.log(err))
 });
+
+app.post('/message', function(req, res){
+    console.log("req.body")
+    console.log(req.body)
+    params = {
+        workspace_id: 'f32c3653-9b64-43ed-88f9-bc31a98e8878',
+        input: {'text': req.body.text},
+        context: req.body.context
+    }
+
+    service.message(params).then(answer=>{
+        console.log("answer")
+        console.log(answer);
+        
+        res.json(answer)
+    })
+    .catch(err => console.log(err))
+});
+
 var port = process.env.PORT || 3000
+
 app.listen(port, function(){
     console.log("Server running!")
 })

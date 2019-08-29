@@ -4,14 +4,16 @@ import './App.css';
 class App extends Component {
 
   state = {
-    response: '',
+    response: [],
     post: '',
-    responseToPost: ''
+    context: ''
   }
 
   componentDidMount() {
     this.callApi()
-      .then(res => this.setState({ response: res.express }))
+      .then(res => {
+        this.setState({ response: this.state.response.concat([res.output.text[0]]), context: res.context})
+      })
       .catch(err => console.log(err))
   }
 
@@ -25,27 +27,27 @@ class App extends Component {
 
   handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(this.state)
-    const response = await fetch('message', {
+    const response = await fetch('/message', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ text: this.state.post })
+      body: JSON.stringify({ text: this.state.post , context: this.state.context})
     });
-    const body = await response.text();
-
-    this.setState({ responseToPost: body });
+    const data = await response.json()
+    this.setState({ response: this.state.response.concat([this.state.post, data.output.text[0]]), context: response.context });
   }
 
   render() {
+    let messages = this.state.response.map((message) => {
+      return <li>{message}</li>
+    })
     return (
       <div>
-        <p>{this.state.response}</p>
-        <form onSubmit={this.handleSubmit}>
-          <p>
-            <strong>Post to Server:</strong>
-          </p>
+        <div className="dialog">
+          <ul>{messages}</ul>
+        </div>
+        <form onSubmit={this.handleSubmit} className="form">
           <input
             type="text"
             value={this.state.post}
@@ -53,7 +55,6 @@ class App extends Component {
           />
           <button type="submit">Submit</button>
         </form>
-        <p>{this.state.responseToPost}</p>
       </div>
     )
   }
