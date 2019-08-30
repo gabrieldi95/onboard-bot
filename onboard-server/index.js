@@ -31,8 +31,6 @@ app.get('/message', function(req, res){
 });
 
 app.post('/message', function(req, res){
-    console.log("req.body")
-    console.log(req.body)
     params = {
         workspace_id: 'f32c3653-9b64-43ed-88f9-bc31a98e8878',
         input: {'text': req.body.text},
@@ -40,9 +38,6 @@ app.post('/message', function(req, res){
     }
 
     service.message(params).then(answer=>{
-        console.log("answer")
-        console.log(answer);
-        
         res.json(answer)
     })
     .catch(err => console.log(err))
